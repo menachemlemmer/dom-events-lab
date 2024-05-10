@@ -18,8 +18,12 @@ const clearBtn = document.querySelector(".clear");
 
 numbers.forEach((number) => {
   number.addEventListener("click", (event) => {
+    if (calculated === true) {
+      clear();
+    }
+    calculated = false;
     currentNumber += event.target.innerText;
-    console.log(currentNumber);
+    display(currentNumber);
   });
 });
 
@@ -29,10 +33,14 @@ operators.forEach((operator) => {
       currentOperator = event.target.innerText;
       previousNumber = currentNumber;
       currentNumber = "";
-    } else {
+    } else if (calculated === false) {
       equal();
+      calculated = false;
+      currentOperator = event.target.innerText;
+    } else {
       currentOperator = event.target.innerText;
     }
+    calculated = false;
   });
 });
 
@@ -57,15 +65,27 @@ function operate(num1, num2, operator) {
 }
 
 function equal() {
+  if (currentOperator === "/" && currentNumber == 0) {
+    display("Can't do that, stupid!");
+    setTimeout(clear, 2000);
+    return;
+  }
   result = operate(previousNumber, currentNumber, currentOperator);
-  clear();
   previousNumber = result;
-  console.log(result);
+  currentNumber = "";
+  currentOperator = "";
+  display(result);
+  calculated = true;
 }
 
 function clear() {
   currentNumber = "";
   previousNumber = "";
   operator = "";
+  display("");
   calculated = false;
+}
+
+function display(number) {
+  document.querySelector(".display").innerText = number;
 }
